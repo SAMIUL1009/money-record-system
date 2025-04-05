@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>তালিকা</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 10px; background: #f2f2f2; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 15px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
+    th { background: #2e86de; color: white; }
+    input[type="text"] { width: 100%; padding: 8px; margin-bottom: 10px; }
+    button { padding: 5px 10px; margin: 2px; cursor: pointer; border-radius: 4px; border: none; }
+    .edit { background: #27ae60; color: white; }
+    .delete { background: #c0392b; color: white; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>📋 রেকর্ড তালিকা</h2>
+  <input type="text" id="searchInput" placeholder="নাম দিয়ে খুঁজুন...">
+  <table>
+    <thead>
+      <tr>
+        <th>নাম</th>
+        <th>ঠিকানা</th>
+        <th>মোট</th>
+        <th>জমা</th>
+        <th>বাকি</th>
+        <th>তারিখ</th>
+        <th>সময়</th>
+        <th>অ্যাকশন</th>
+      </tr>
+    </thead>
+    <tbody id="recordTable"></tbody>
+  </table>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyASbCt9rJxQbo-tAtDZ_ZjcarnDjHt_kV0",
+    authDomain: "money-record-app-b99ac.firebaseapp.com",
+    projectId: "money-record-app-b99ac",
+    storageBucket: "money-record-app-b99ac.firebasestorage.app",
+    messagingSenderId: "1063647502694",
+    appId: "1:1063647502694:web:eb6bf014e01143d348a8a7"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const recordTable = document.getElementById("recordTable");
+  const searchInput = document.getElementById("searchInput");
+
+  function renderData(doc) {
+    const data = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${data.name}</td>
+      <td>${data.address}</td>
+      <td>${data.amount}</td>
+      <td>${data.paid}</td>
+      <td>${data.amount - data.paid}</td>
+      <td>${data.date}</td>
+      <td>${data.time}</td>
+      <td>
+        <button class="edit" onclick="editRecord('${doc.id}', '${data.name}', '${data.address}', ${data.amount}, ${data.paid}, '${data.date}', '${data.time}')">✏️</button>
+        <button class="delete" onclick="deleteRecord('${doc.id}')">🗑️</button>
+      </td>
+    `;
+    recordTable.appendChild(tr);
+  }
+
+  function getData() {
+    recordTable.innerHTML = "";
+    db.collection("records").get().then(snapshot => {
+      snapshot.docs.forEach(doc => renderData(doc));
+    });
+  }
+
+  function deleteRecord(id) {
+    if (confirm("আপনি কি মুছে ফেলতে চান?")) {
+      db.collection("records").doc(id).delete().then(getData);
+    }
+  }
+
+  function editRecord(id, name, address, amount, paid, date, time) {
+    const newName = prompt("নাম", name);
+    const newAddress = prompt("ঠিকানা", address);
+    const newAmount = prompt("মোট টাকা", amount);
+    const newPaid = prompt("জমা টাকা", paid);
+    const newDate = prompt("তারিখ", date);
+    const newTime = prompt("সময়", time);
+
+    if (newName && newAddress && newAmount && newPaid && newDate && newTime) {
+      db.collection("records").doc(id).update({
+        name: newName,
+        address: newAddress,
+        amount: Number(newAmount),
+        paid: Number(newPaid),
+        date: newDate,
+        time: newTime
+      }).then(getData);
+    }
+  }
+
+  searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.toLowerCase();
+    const rows = recordTable.querySelectorAll("tr");
+    rows.forEach(row => {
+      const name = row.children[0].textContent.toLowerCase();
+      row.style.display = name.includes(keyword) ? "" : "none";
+    });
+  });
+
+  getData();
+</script>
+</body>
+</html>
