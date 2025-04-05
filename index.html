@@ -6,59 +6,42 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 30px;
       background-color: #f4f4f4;
+      padding: 20px;
     }
     h2 {
       text-align: center;
     }
     .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-    }
-    form, .list-section {
+      max-width: 800px;
+      margin: auto;
       background: white;
       padding: 20px;
       border-radius: 8px;
-      max-width: 700px;
-      width: 100%;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     input, button {
       width: 100%;
-      margin-top: 10px;
       padding: 10px;
-      font-size: 16px;
-    }
-    .search-box {
       margin-top: 10px;
-      margin-bottom: 20px;
     }
     table {
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
-      margin-top: 10px;
-    }
-    table, th, td {
-      border: 1px solid #999;
     }
     th, td {
-      padding: 10px;
+      border: 1px solid #999;
+      padding: 8px;
       text-align: center;
     }
     .actions button {
       margin: 2px;
-      padding: 6px 10px;
-      font-size: 14px;
     }
   </style>
 </head>
 <body>
-
   <h2>টাকা রেকর্ড সিস্টেম</h2>
-
   <div class="container">
     <form id="moneyForm">
       <input type="text" id="name" placeholder="নাম" required>
@@ -70,111 +53,131 @@
       <button type="submit">সেভ করুন</button>
     </form>
 
-    <div class="list-section">
-      <h3>রেকর্ড লিস্ট</h3>
-      
-      <input type="text" id="searchInput" class="search-box" placeholder="🔍 নাম বা ঠিকানা দিয়ে সার্চ করুন...">
-      
-      <table id="dataTable">
-        <thead>
-          <tr>
-            <th>নাম</th>
-            <th>ঠিকানা</th>
-            <th>মোট টাকা</th>
-            <th>জমা</th>
-            <th>বাকি</th>
-            <th>তারিখ</th>
-            <th>সময়</th>
-            <th>অপশন</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <input type="text" id="search" placeholder="🔍 নাম বা ঠিকানা সার্চ করুন..." style="margin-top:20px;">
+
+    <table>
+      <thead>
+        <tr>
+          <th>নাম</th>
+          <th>ঠিকানা</th>
+          <th>মোট</th>
+          <th>জমা</th>
+          <th>বাকি</th>
+          <th>তারিখ</th>
+          <th>সময়</th>
+          <th>অপশন</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable"></tbody>
+    </table>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyASbCt9rJxQbo-tAtDZ_ZjcarnDjHt_kV0",
+      authDomain: "money-record-app-b99ac.firebaseapp.com",
+      projectId: "money-record-app-b99ac",
+      storageBucket: "money-record-app-b99ac.firebasestorage.app",
+      messagingSenderId: "1063647502694",
+      appId: "1:1063647502694:web:eb6bf014e01143d348a8a7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const form = document.getElementById("moneyForm");
-    const tableBody = document.querySelector("#dataTable tbody");
-    const searchInput = document.getElementById("searchInput");
+    const tableBody = document.getElementById("dataTable");
+    const searchInput = document.getElementById("search");
 
-    let editIndex = -1;
-    const dataList = [];
+    let currentEditId = null;
 
-    function renderTable(filteredList = dataList) {
+    function renderData(docs) {
       tableBody.innerHTML = "";
-
-      filteredList.forEach((item, index) => {
-        const row = `
-          <tr>
-            <td>${item.name}</td>
-            <td>${item.address}</td>
-            <td>${item.amount}</td>
-            <td>${item.paid}</td>
-            <td>${item.amount - item.paid}</td>
-            <td>${item.date}</td>
-            <td>${item.time}</td>
-            <td class="actions">
-              <button onclick="editRow(${index})">✏️ এডিট</button>
-              <button onclick="deleteRow(${index})">❌ ডিলিট</button>
-            </td>
-          </tr>
+      docs.forEach(doc => {
+        const data = doc.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${data.name}</td>
+          <td>${data.address}</td>
+          <td>${data.amount}</td>
+          <td>${data.paid}</td>
+          <td>${data.amount - data.paid}</td>
+          <td>${data.date}</td>
+          <td>${data.time}</td>
+          <td class="actions">
+            <button onclick="editData('${doc.id}')">✏️</button>
+            <button onclick="deleteData('${doc.id}')">❌</button>
+          </td>
         `;
-        tableBody.innerHTML += row;
+        tableBody.appendChild(tr);
       });
     }
 
-    form.addEventListener("submit", function(e) {
+    function loadData() {
+      db.collection("records").onSnapshot(snapshot => {
+        const docs = snapshot.docs;
+        renderData(docs);
+      });
+    }
+
+    form.addEventListener("submit", e => {
       e.preventDefault();
 
-      const item = {
-        name: document.getElementById("name").value,
-        address: document.getElementById("address").value,
-        amount: parseFloat(document.getElementById("amount").value),
-        paid: parseFloat(document.getElementById("paid").value),
-        date: document.getElementById("date").value,
-        time: document.getElementById("time").value
+      const newData = {
+        name: form.name.value,
+        address: form.address.value,
+        amount: Number(form.amount.value),
+        paid: Number(form.paid.value),
+        date: form.date.value,
+        time: form.time.value
       };
 
-      if (editIndex >= 0) {
-        dataList[editIndex] = item;
-        editIndex = -1;
+      if (currentEditId) {
+        db.collection("records").doc(currentEditId).update(newData).then(() => {
+          currentEditId = null;
+          form.reset();
+        });
       } else {
-        dataList.push(item);
+        db.collection("records").add(newData).then(() => form.reset());
       }
-
-      form.reset();
-      renderTable();
     });
 
-    window.editRow = function(index) {
-      const item = dataList[index];
-      document.getElementById("name").value = item.name;
-      document.getElementById("address").value = item.address;
-      document.getElementById("amount").value = item.amount;
-      document.getElementById("paid").value = item.paid;
-      document.getElementById("date").value = item.date;
-      document.getElementById("time").value = item.time;
+    window.editData = async (id) => {
+      const doc = await db.collection("records").doc(id).get();
+      const data = doc.data();
+      form.name.value = data.name;
+      form.address.value = data.address;
+      form.amount.value = data.amount;
+      form.paid.value = data.paid;
+      form.date.value = data.date;
+      form.time.value = data.time;
+      currentEditId = id;
+    };
 
-      editIndex = index;
-    }
-
-    window.deleteRow = function(index) {
-      if (confirm("আপনি কি নিশ্চিত এই ডাটা ডিলিট করতে চান?")) {
-        dataList.splice(index, 1);
-        renderTable();
+    window.deleteData = (id) => {
+      if (confirm("আপনি কি ডিলিট করতে চান?")) {
+        db.collection("records").doc(id).delete();
       }
-    }
+    };
 
-    searchInput.addEventListener("input", function() {
+    searchInput.addEventListener("input", async () => {
       const keyword = searchInput.value.toLowerCase();
-      const filtered = dataList.filter(item =>
-        item.name.toLowerCase().includes(keyword) ||
-        item.address.toLowerCase().includes(keyword)
-      );
-      renderTable(filtered);
+      const snapshot = await db.collection("records").get();
+      const filtered = snapshot.docs.filter(doc => {
+        const data = doc.data();
+        return (
+          data.name.toLowerCase().includes(keyword) ||
+          data.address.toLowerCase().includes(keyword)
+        );
+      });
+      renderData(filtered);
     });
-  </script>
 
+    loadData();
+  </script>
 </body>
 </html>
