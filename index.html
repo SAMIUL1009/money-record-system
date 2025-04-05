@@ -3,181 +3,220 @@
 <head>
   <meta charset="UTF-8">
   <title>টাকা রেকর্ড সিস্টেম</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-    }
-    h2 {
-      text-align: center;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-    }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #999;
-      padding: 8px;
-      text-align: center;
-    }
-    .actions button {
-      margin: 2px;
-    }
+    body { font-family: Arial; background: #f9f9f9; padding: 20px; }
+    .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
+    h2 { text-align: center; }
+    input, button, select { padding: 8px; margin-top: 10px; width: 100%; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    .actions button { margin: 2px; }
+    #logout { float: right; }
   </style>
 </head>
 <body>
-  <h2>টাকা রেকর্ড সিস্টেম</h2>
-  <div class="container">
-    <form id="moneyForm">
-      <input type="text" id="name" placeholder="নাম" required>
-      <input type="text" id="address" placeholder="ঠিকানা" required>
-      <input type="number" id="amount" placeholder="মোট টাকা" required>
-      <input type="number" id="paid" placeholder="জমা" required>
-      <input type="date" id="date" required>
-      <input type="time" id="time" required>
-      <button type="submit">সেভ করুন</button>
-    </form>
 
-    <input type="text" id="search" placeholder="🔍 নাম বা ঠিকানা সার্চ করুন..." style="margin-top:20px;">
+<div class="container" id="loginContainer">
+  <h2>🔐 লগইন করুন</h2>
+  <input type="email" id="email" placeholder="ইমেইল">
+  <input type="password" id="password" placeholder="পাসওয়ার্ড">
+  <button onclick="login()">লগইন</button>
+</div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>নাম</th>
-          <th>ঠিকানা</th>
-          <th>মোট</th>
-          <th>জমা</th>
-          <th>বাকি</th>
-          <th>তারিখ</th>
-          <th>সময়</th>
-          <th>অপশন</th>
-        </tr>
-      </thead>
-      <tbody id="dataTable"></tbody>
-    </table>
-  </div>
+<div class="container" id="mainContainer" style="display:none;">
+  <h2>💰 টাকা রেকর্ড সিস্টেম <button id="logout" onclick="logout()">🚪 লগআউট</button></h2>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <form id="moneyForm">
+    <input type="text" id="name" placeholder="নাম" required>
+    <input type="text" id="address" placeholder="ঠিকানা" required>
+    <input type="number" id="amount" placeholder="মোট টাকা" required>
+    <input type="number" id="paid" placeholder="জমা" required>
+    <input type="date" id="date" required>
+    <input type="time" id="time" required>
+    <button type="submit">সেভ করুন</button>
+  </form>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyASbCt9rJxQbo-tAtDZ_ZjcarnDjHt_kV0",
-      authDomain: "money-record-app-b99ac.firebaseapp.com",
-      projectId: "money-record-app-b99ac",
-      storageBucket: "money-record-app-b99ac.firebasestorage.app",
-      messagingSenderId: "1063647502694",
-      appId: "1:1063647502694:web:eb6bf014e01143d348a8a7"
+  <input type="text" id="search" placeholder="🔍 সার্চ নাম/ঠিকানা" />
+  <select id="filterDue">
+    <option value="all">সব</option>
+    <option value="due">যাদের বাকি আছে</option>
+  </select>
+  <input type="date" id="filterDate" />
+
+  <button onclick="downloadPDF()">📄 PDF</button>
+  <button onclick="downloadExcel()">📊 Excel</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>নাম</th><th>ঠিকানা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>তারিখ</th><th>সময়</th><th>অপশন</th>
+      </tr>
+    </thead>
+    <tbody id="dataTable"></tbody>
+  </table>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyASbCt9rJxQbo-tAtDZ_ZjcarnDjHt_kV0",
+    authDomain: "money-record-app-b99ac.firebaseapp.com",
+    projectId: "money-record-app-b99ac",
+    storageBucket: "money-record-app-b99ac.firebasestorage.app",
+    messagingSenderId: "1063647502694",
+    appId: "1:1063647502694:web:eb6bf014e01143d348a8a7"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  const loginContainer = document.getElementById("loginContainer");
+  const mainContainer = document.getElementById("mainContainer");
+  const form = document.getElementById("moneyForm");
+  const tableBody = document.getElementById("dataTable");
+  const searchInput = document.getElementById("search");
+  const filterDue = document.getElementById("filterDue");
+  const filterDate = document.getElementById("filterDate");
+
+  let currentEditId = null;
+  let fullData = [];
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      loginContainer.style.display = "none";
+      mainContainer.style.display = "block";
+      loadData();
+    } else {
+      loginContainer.style.display = "block";
+      mainContainer.style.display = "none";
+    }
+  });
+
+  function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    auth.signInWithEmailAndPassword(email, password).catch(e => alert(e.message));
+  }
+
+  function logout() {
+    auth.signOut();
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const newData = {
+      name: form.name.value,
+      address: form.address.value,
+      amount: Number(form.amount.value),
+      paid: Number(form.paid.value),
+      date: form.date.value,
+      time: form.time.value
     };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const form = document.getElementById("moneyForm");
-    const tableBody = document.getElementById("dataTable");
-    const searchInput = document.getElementById("search");
-
-    let currentEditId = null;
-
-    function renderData(docs) {
-      tableBody.innerHTML = "";
-      docs.forEach(doc => {
-        const data = doc.data();
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${data.name}</td>
-          <td>${data.address}</td>
-          <td>${data.amount}</td>
-          <td>${data.paid}</td>
-          <td>${data.amount - data.paid}</td>
-          <td>${data.date}</td>
-          <td>${data.time}</td>
-          <td class="actions">
-            <button onclick="editData('${doc.id}')">✏️</button>
-            <button onclick="deleteData('${doc.id}')">❌</button>
-          </td>
-        `;
-        tableBody.appendChild(tr);
+    if (currentEditId) {
+      db.collection("records").doc(currentEditId).update(newData).then(() => {
+        form.reset(); currentEditId = null;
       });
+    } else {
+      db.collection("records").add(newData).then(() => form.reset());
     }
+  });
 
-    function loadData() {
-      db.collection("records").onSnapshot(snapshot => {
-        const docs = snapshot.docs;
-        renderData(docs);
-      });
-    }
+  window.editData = async (id) => {
+    const doc = await db.collection("records").doc(id).get();
+    const d = doc.data();
+    form.name.value = d.name;
+    form.address.value = d.address;
+    form.amount.value = d.amount;
+    form.paid.value = d.paid;
+    form.date.value = d.date;
+    form.time.value = d.time;
+    currentEditId = id;
+  };
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
+  window.deleteData = id => {
+    if (confirm("ডিলিট করতে চান?")) db.collection("records").doc(id).delete();
+  };
 
-      const newData = {
-        name: form.name.value,
-        address: form.address.value,
-        amount: Number(form.amount.value),
-        paid: Number(form.paid.value),
-        date: form.date.value,
-        time: form.time.value
+  function renderData(docs) {
+    tableBody.innerHTML = "";
+    fullData = docs;
+    docs.forEach(doc => {
+      const d = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.name}</td><td>${d.address}</td><td>${d.amount}</td><td>${d.paid}</td>
+        <td>${d.amount - d.paid}</td><td>${d.date}</td><td>${d.time}</td>
+        <td>
+          <button onclick="editData('${doc.id}')">✏️</button>
+          <button onclick="deleteData('${doc.id}')">❌</button>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  function applyFilters() {
+    let keyword = searchInput.value.toLowerCase();
+    let date = filterDate.value;
+    let due = filterDue.value;
+
+    let filtered = fullData.filter(doc => {
+      let d = doc.data();
+      let matchSearch = d.name.toLowerCase().includes(keyword) || d.address.toLowerCase().includes(keyword);
+      let matchDate = date ? d.date === date : true;
+      let matchDue = due === "due" ? d.amount > d.paid : true;
+      return matchSearch && matchDate && matchDue;
+    });
+    renderData(filtered);
+  }
+
+  searchInput.addEventListener("input", applyFilters);
+  filterDate.addEventListener("change", applyFilters);
+  filterDue.addEventListener("change", applyFilters);
+
+  function loadData() {
+    db.collection("records").onSnapshot(snapshot => {
+      renderData(snapshot.docs);
+    });
+  }
+
+  function downloadExcel() {
+    const data = fullData.map(doc => {
+      const d = doc.data();
+      return {
+        নাম: d.name,
+        ঠিকানা: d.address,
+        মোট: d.amount,
+        জমা: d.paid,
+        বাকি: d.amount - d.paid,
+        তারিখ: d.date,
+        সময়: d.time
       };
-
-      if (currentEditId) {
-        db.collection("records").doc(currentEditId).update(newData).then(() => {
-          currentEditId = null;
-          form.reset();
-        });
-      } else {
-        db.collection("records").add(newData).then(() => form.reset());
-      }
     });
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Records");
+    XLSX.writeFile(wb, "Records.xlsx");
+  }
 
-    window.editData = async (id) => {
-      const doc = await db.collection("records").doc(id).get();
-      const data = doc.data();
-      form.name.value = data.name;
-      form.address.value = data.address;
-      form.amount.value = data.amount;
-      form.paid.value = data.paid;
-      form.date.value = data.date;
-      form.time.value = data.time;
-      currentEditId = id;
-    };
-
-    window.deleteData = (id) => {
-      if (confirm("আপনি কি ডিলিট করতে চান?")) {
-        db.collection("records").doc(id).delete();
-      }
-    };
-
-    searchInput.addEventListener("input", async () => {
-      const keyword = searchInput.value.toLowerCase();
-      const snapshot = await db.collection("records").get();
-      const filtered = snapshot.docs.filter(doc => {
-        const data = doc.data();
-        return (
-          data.name.toLowerCase().includes(keyword) ||
-          data.address.toLowerCase().includes(keyword)
-        );
-      });
-      renderData(filtered);
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    pdf.text("টাকা রেকর্ড রিপোর্ট", 10, 10);
+    let y = 20;
+    fullData.forEach(doc => {
+      const d = doc.data();
+      const row = `নাম: ${d.name}, ঠিকানা: ${d.address}, মোট: ${d.amount}, জমা: ${d.paid}, বাকি: ${d.amount - d.paid}, তারিখ: ${d.date}, সময়: ${d.time}`;
+      pdf.text(row, 10, y);
+      y += 10;
     });
-
-    loadData();
-  </script>
+    pdf.save("records.pdf");
+  }
+</script>
 </body>
 </html>
