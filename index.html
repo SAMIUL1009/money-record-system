@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>টাকা রেকর্ড সিস্টেম</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    table, th, td {
+      border: 1px solid #999;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>টাকা রেকর্ড সিস্টেম</h2>
+
+  <form id="moneyForm">
+    <input type="text" id="name" placeholder="নাম" required>
+    <input type="text" id="address" placeholder="ঠিকানা" required>
+    <input type="number" id="amount" placeholder="মোট টাকা" required>
+    <input type="number" id="paid" placeholder="জমা" required>
+    <input type="date" id="date" required>
+    <input type="time" id="time" required>
+    <button type="submit">সেভ করুন</button>
+  </form>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>নাম</th>
+        <th>ঠিকানা</th>
+        <th>মোট টাকা</th>
+        <th>জমা</th>
+        <th>বাকি</th>
+        <th>তারিখ</th>
+        <th>সময়</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("moneyForm");
+    const tableBody = document.querySelector("#dataTable tbody");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const address = document.getElementById("address").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const paid = parseFloat(document.getElementById("paid").value);
+      const due = amount - paid;
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+
+      const row = `
+        <tr>
+          <td>${name}</td>
+          <td>${address}</td>
+          <td>${amount}</td>
+          <td>${paid}</td>
+          <td>${due}</td>
+          <td>${date}</td>
+          <td>${time}</td>
+        </tr>
+      `;
+
+      tableBody.innerHTML += row;
+
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>
