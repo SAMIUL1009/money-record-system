@@ -1,285 +1,1255 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>টাকা রেকর্ড সিস্টেম</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f2f2;
-      padding: 10px;
-      margin: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    h2 {
-      text-align: center;
-      font-size: 22px;
-    }
-    input, button, select {
-      padding: 10px;
-      margin-top: 10px;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    button {
-      cursor: pointer;
-      background: #2e86de;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      overflow-x: auto;
-      display: block;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-      font-size: 14px;
-      white-space: nowrap;
-    }
-    .actions button {
-      margin: 2px;
-      font-size: 12px;
-      padding: 5px 8px;
-    }
-    #logout {
-      float: right;
-      background: red;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
 
-    @media (max-width: 600px) {
-      h2 {
-        font-size: 18px;
-      }
-      input, button, select {
-        font-size: 14px;
-      }
-      table {
-        font-size: 12px;
-      }
-      .actions button {
-        font-size: 10px;
-        padding: 4px 6px;
-      }
-    }
-  </style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        /* Login Form */
+        .login-form {
+            display: block;
+        }
+
+        .login-form.hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f5515f 0%, #9f041b 100%);
+        }
+
+        .demo-credentials {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .demo-credentials p {
+            margin: 5px 0;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info h3 {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .user-info span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Time Card */
+        .time-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+        }
+
+        .time-card .time {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .time-card .date {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* Check In/Out Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .check-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .check-in {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .check-out {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .check-btn:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Attendance Table */
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-present {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-absent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-late {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Admin Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* User Management */
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .user-info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .role-admin {
+            background: #667eea;
+            color: white;
+        }
+
+        .role-worker {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal-buttons .save-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-buttons .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            background: white;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+
+        .toast.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+
+        .toast.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: inherit;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📋 Attendance System</h1>
+            <p>Mark your attendance easily</p>
+        </div>
 
-<div class="container" id="loginContainer">
-  <h2>🔐 লগইন করুন</h2>
-  <input type="email" id="email" placeholder="ইমেইল">
-  <input type="password" id="password" placeholder="পাসওয়ার্ড">
-  <button onclick="login()">লগইন</button>
-</div>
+        <!-- Content -->
+        <div class="content">
+            <!-- Login Form -->
+            <div id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label>Select Role</label>
+                    <select id="roleSelect">
+                        <option value="admin">Admin</option>
+                        <option value="worker" selected>Worker</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="Enter email" value="john@demo.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter password" value="worker123">
+                </div>
+                <button class="btn" onclick="login()">Sign In</button>
+                
+                <div class="demo-credentials">
+                    <p><strong>Demo Credentials:</strong></p>
+                    <p>👤 Admin: admin@demo.com / admin123</p>
+                    <p>👤 Worker: john@demo.com / worker123</p>
+                </div>
+            </div>
 
-<div class="container" id="mainContainer" style="display:none;">
-  <h2>💰 টাকা রেকর্ড সিস্টেম <button id="logout" onclick="logout()">🚪 লগআউট</button></h2>
+            <!-- Dashboard -->
+            <div id="dashboard" class="dashboard">
+                <!-- User Info -->
+                <div class="user-info">
+                    <div>
+                        <h3>Welcome, <span id="userName">User</span></h3>
+                        <p id="userRole">Role: Worker</p>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
 
-  <form id="moneyForm">
-    <input type="text" id="name" placeholder="নাম" required>
-    <input type="text" id="address" placeholder="ঠিকানা" required>
-    <input type="number" id="amount" placeholder="মোট টাকা" required>
-    <input type="number" id="paid" placeholder="জমা" required>
-    <input type="date" id="date" required>
-    <input type="time" id="time" required>
-    <button type="submit">সেভ করুন</button>
-  </form>
+                <!-- Worker Dashboard -->
+                <div id="workerDashboard">
+                    <!-- Time Card -->
+                    <div class="time-card">
+                        <div class="time" id="currentTime">--:--:--</div>
+                        <div class="date" id="currentDate">Loading...</div>
+                    </div>
 
-  <input type="text" id="search" placeholder="🔍 সার্চ নাম/ঠিকানা" />
-  <select id="filterDue">
-    <option value="all">সব</option>
-    <option value="due">যাদের বাকি আছে</option>
-  </select>
-  <input type="date" id="filterDate" />
+                    <!-- Check In/Out Buttons -->
+                    <div class="action-buttons">
+                        <button class="check-btn check-in" id="checkInBtn" onclick="checkIn()">✅ Check In</button>
+                        <button class="check-btn check-out" id="checkOutBtn" onclick="checkOut()">🚪 Check Out</button>
+                    </div>
 
-  <button onclick="downloadPDF()">📄 PDF</button>
-  <button onclick="downloadExcel()">📊 Excel</button>
+                    <!-- Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPresent">0</div>
+                            <div class="stat-label">Present</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalLate">0</div>
+                            <div class="stat-label">Late</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalAbsent">0</div>
+                            <div class="stat-label">Absent</div>
+                        </div>
+                    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>নাম</th><th>ঠিকানা</th><th>মোট</th><th>জমা</th><th>বাকি</th><th>তারিখ</th><th>সময়</th><th>অপশন</th>
-      </tr>
-    </thead>
-    <tbody id="dataTable"></tbody>
-  </table>
-</div>
+                    <!-- Attendance History -->
+                    <div class="section-title">
+                        <span>📊 My Attendance History</span>
+                        <button class="btn-secondary" style="width: auto; padding: 8px 15px; margin: 0;" onclick="exportAttendance()">Export</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceBody">
+                                <!-- Attendance records will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyASbCt9rJxQbo-tAtDZ_ZjcarnDjHt_kV0",
-    authDomain: "money-record-app-b99ac.firebaseapp.com",
-    projectId: "money-record-app-b99ac",
-    storageBucket: "money-record-app-b99ac.firebasestorage.app",
-    messagingSenderId: "1063647502694",
-    appId: "1:1063647502694:web:eb6bf014e01143d348a8a7"
-  };
+                <!-- Admin Dashboard -->
+                <div id="adminDashboard" style="display: none;">
+                    <!-- Admin Tabs -->
+                    <div class="admin-tabs">
+                        <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+                        <button class="tab-btn" onclick="switchTab('users')">Users</button>
+                        <button class="tab-btn" onclick="switchTab('allAttendance')">Attendance</button>
+                    </div>
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+                    <!-- Dashboard Tab -->
+                    <div id="dashboardTab" class="tab-content active">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalUsers">0</div>
+                                <div class="stat-label">Total Users</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="todayPresent">0</div>
+                                <div class="stat-label">Today Present</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalRecords">0</div>
+                                <div class="stat-label">Total Records</div>
+                            </div>
+                        </div>
 
-  const loginContainer = document.getElementById("loginContainer");
-  const mainContainer = document.getElementById("mainContainer");
-  const form = document.getElementById("moneyForm");
-  const tableBody = document.getElementById("dataTable");
-  const searchInput = document.getElementById("search");
-  const filterDue = document.getElementById("filterDue");
-  const filterDate = document.getElementById("filterDate");
+                        <!-- Summary Chart (Simple Bar) -->
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 15px;">Monthly Summary</h4>
+                            <div id="summaryBars" style="display: flex; gap: 10px; height: 200px; align-items: flex-end;">
+                                <!-- Bars will be inserted here -->
+                            </div>
+                        </div>
 
-  let currentEditId = null;
-  let fullData = [];
+                        <!-- Recent Activity -->
+                        <h4 style="margin-bottom: 15px;">Recent Activity</h4>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentActivityBody">
+                                    <!-- Recent activity will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      loginContainer.style.display = "none";
-      mainContainer.style.display = "block";
-      loadData();
-    } else {
-      loginContainer.style.display = "block";
-      mainContainer.style.display = "none";
-    }
-  });
+                    <!-- Users Tab -->
+                    <div id="usersTab" class="tab-content">
+                        <button class="btn" style="margin-bottom: 15px;" onclick="showAddUserModal()">➕ Add New User</button>
+                        <div class="user-list" id="userList">
+                            <!-- Users will be inserted here -->
+                        </div>
+                    </div>
 
-  function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    auth.signInWithEmailAndPassword(email, password).catch(e => alert(e.message));
-  }
+                    <!-- All Attendance Tab -->
+                    <div id="allAttendanceTab" class="tab-content">
+                        <div style="margin-bottom: 15px;">
+                            <input type="date" id="filterDate" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Date</th>
+                                        <th>Check In</th>
+                                        <th>Check Out</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allAttendanceBody">
+                                    <!-- All attendance records will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  function logout() {
-    auth.signOut();
-  }
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Add New User</h3>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="modalName" placeholder="Enter name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="modalEmail" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="modalPassword" placeholder="Enter password">
+            </div>
+            <div class="form-group">
+                <label>Role</label>
+                <select id="modalRole">
+                    <option value="worker">Worker</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Employee ID</label>
+                <input type="text" id="modalEmployeeId" placeholder="Enter employee ID">
+            </div>
+            <div class="modal-buttons">
+                <button class="save-btn" onclick="saveUser()">Save</button>
+                <button class="cancel-btn" onclick="hideModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const newData = {
-      name: form.name.value,
-      address: form.address.value,
-      amount: Number(form.amount.value),
-      paid: Number(form.paid.value),
-      date: form.date.value,
-      time: form.time.value
-    };
-    if (currentEditId) {
-      db.collection("records").doc(currentEditId).update(newData).then(() => {
-        form.reset(); currentEditId = null;
-      });
-    } else {
-      db.collection("records").add(newData).then(() => form.reset());
-    }
-  });
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toastMessage">Notification</span>
+        <button class="toast-close" onclick="hideToast()">×</button>
+    </div>
 
-  window.editData = async (id) => {
-    const doc = await db.collection("records").doc(id).get();
-    const d = doc.data();
-    form.name.value = d.name;
-    form.address.value = d.address;
-    form.amount.value = d.amount;
-    form.paid.value = d.paid;
-    form.date.value = d.date;
-    form.time.value = d.time;
-    currentEditId = id;
-  };
+    <script>
+        // ==================== DATA STORAGE ====================
+        let currentUser = null;
+        let editingUserId = null;
+        let timerInterval = null;
 
-  window.deleteData = id => {
-    if (confirm("ডিলিট করতে চান?")) db.collection("records").doc(id).delete();
-  };
+        // Default data
+        let users = [
+            {
+                id: 1,
+                name: "Admin User",
+                email: "admin@demo.com",
+                password: "admin123",
+                role: "admin",
+                employeeId: "AD001"
+            },
+            {
+                id: 2,
+                name: "John Worker",
+                email: "john@demo.com",
+                password: "worker123",
+                role: "worker",
+                employeeId: "WK001"
+            },
+            {
+                id: 3,
+                name: "Sarah Worker",
+                email: "sarah@demo.com",
+                password: "worker123",
+                role: "worker",
+                employeeId: "WK002"
+            }
+        ];
 
-  function renderData(docs) {
-    tableBody.innerHTML = "";
-    fullData = docs;
-    docs.forEach(doc => {
-      const d = doc.data();
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${d.name}</td><td>${d.address}</td><td>${d.amount}</td><td>${d.paid}</td>
-        <td>${d.amount - d.paid}</td><td>${d.date}</td><td>${d.time}</td>
-        <td class="actions">
-          <button onclick="editData('${doc.id}')">✏️</button>
-          <button onclick="deleteData('${doc.id}')">❌</button>
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
-  }
+        let attendance = [
+            {
+                id: 1,
+                userId: 2,
+                date: "2026-03-16",
+                checkIn: "09:00 AM",
+                checkOut: "05:30 PM",
+                status: "present"
+            },
+            {
+                id: 2,
+                userId: 3,
+                date: "2026-03-16",
+                checkIn: "09:15 AM",
+                checkOut: "05:30 PM",
+                status: "late"
+            },
+            {
+                id: 3,
+                userId: 2,
+                date: "2026-03-15",
+                checkIn: "08:55 AM",
+                checkOut: "05:25 PM",
+                status: "present"
+            }
+        ];
 
-  function applyFilters() {
-    let keyword = searchInput.value.toLowerCase();
-    let date = filterDate.value;
-    let due = filterDue.value;
+        // ==================== INITIALIZATION ====================
+        window.onload = function() {
+            loadFromStorage();
+            startClock();
+        };
 
-    let filtered = fullData.filter(doc => {
-      let d = doc.data();
-      let matchSearch = d.name.toLowerCase().includes(keyword) || d.address.toLowerCase().includes(keyword);
-      let matchDate = date ? d.date === date : true;
-      let matchDue = due === "due" ? d.amount > d.paid : true;
-      return matchSearch && matchDate && matchDue;
-    });
-    renderData(filtered);
-  }
+        function loadFromStorage() {
+            // Load users from localStorage if available
+            const savedUsers = localStorage.getItem('attendance_users');
+            if (savedUsers) {
+                users = JSON.parse(savedUsers);
+            }
+            
+            const savedAttendance = localStorage.getItem('attendance_records');
+            if (savedAttendance) {
+                attendance = JSON.parse(savedAttendance);
+            }
+        }
 
-  searchInput.addEventListener("input", applyFilters);
-  filterDate.addEventListener("change", applyFilters);
-  filterDue.addEventListener("change", applyFilters);
+        function saveToStorage() {
+            localStorage.setItem('attendance_users', JSON.stringify(users));
+            localStorage.setItem('attendance_records', JSON.stringify(attendance));
+        }
 
-  function loadData() {
-    db.collection("records").onSnapshot(snapshot => {
-      renderData(snapshot.docs);
-    });
-  }
+        // ==================== CLOCK ====================
+        function startClock() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            function updateTime() {
+                const now = new Date();
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+            
+            updateTime();
+            timerInterval = setInterval(updateTime, 1000);
+        }
 
-  function downloadExcel() {
-    const data = fullData.map(doc => {
-      const d = doc.data();
-      return {
-        নাম: d.name,
-        ঠিকানা: d.address,
-        মোট: d.amount,
-        জমা: d.paid,
-        বাকি: d.amount - d.paid,
-        তারিখ: d.date,
-        সময়: d.time
-      };
-    });
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Records");
-    XLSX.writeFile(wb, "Records.xlsx");
-  }
+        // ==================== AUTHENTICATION ====================
+        function login() {
+            const role = document.getElementById('roleSelect').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-  async function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-    pdf.text("টাকা রেকর্ড রিপোর্ট", 10, 10);
-    let y = 20;
-    fullData.forEach(doc => {
-      const d = doc.data();
-      const row = `নাম: ${d.name}, ঠিকানা: ${d.address}, মোট: ${d.amount}, জমা: ${d.paid}, বাকি: ${d.amount - d.paid}, তারিখ: ${d.date}, সময়: ${d.time}`;
-      pdf.text(row, 10, y);
-      y += 10;
-    });
-    pdf.save("records.pdf");
-  }
-</script>
+            const user = users.find(u => u.email === email && u.password === password && u.role === role);
+
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userRole').textContent = `Role: ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}`;
+
+                if (user.role === 'admin') {
+                    document.getElementById('workerDashboard').style.display = 'none';
+                    document.getElementById('adminDashboard').style.display = 'block';
+                    loadAdminDashboard();
+                } else {
+                    document.getElementById('workerDashboard').style.display = 'block';
+                    document.getElementById('adminDashboard').style.display = 'none';
+                    loadWorkerDashboard();
+                }
+
+                showToast(`Welcome back, ${user.name}!`, 'success');
+            } else {
+                showToast('Invalid credentials!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('email').value = 'john@demo.com';
+            document.getElementById('password').value = 'worker123';
+            showToast('Logged out successfully', 'info');
+        }
+
+        // ==================== WORKER FUNCTIONS ====================
+        function loadWorkerDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayAttendance = attendance.find(a => a.userId === currentUser.id && a.date === today);
+            
+            // Update button states
+            document.getElementById('checkInBtn').disabled = !!todayAttendance;
+            document.getElementById('checkOutBtn').disabled = !todayAttendance || !!todayAttendance.checkOut;
+            
+            // Load stats
+            updateWorkerStats();
+            
+            // Load attendance history
+            loadAttendanceHistory();
+        }
+
+        function checkIn() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toISOString().split('T')[0];
+            const hour = now.getHours();
+            
+            const status = hour >= 9 ? 'late' : 'present';
+            
+            const newAttendance = {
+                id: attendance.length + 1,
+                userId: currentUser.id,
+                date: dateStr,
+                checkIn: timeStr,
+                checkOut: null,
+                status: status
+            };
+            
+            attendance.push(newAttendance);
+            saveToStorage();
+            
+            document.getElementById('checkInBtn').disabled = true;
+            document.getElementById('checkOutBtn').disabled = false;
+            
+            loadAttendanceHistory();
+            updateWorkerStats();
+            
+            showToast(`Checked in successfully at ${timeStr}`, status === 'late' ? 'warning' : 'success');
+        }
+
+        function checkOut() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toISOString().split('T')[0];
+            
+            const record = attendance.find(a => a.userId === currentUser.id && a.date === dateStr && !a.checkOut);
+            
+            if (record) {
+                record.checkOut = timeStr;
+                saveToStorage();
+                
+                document.getElementById('checkOutBtn').disabled = true;
+                loadAttendanceHistory();
+                updateWorkerStats();
+                
+                showToast(`Checked out successfully at ${timeStr}`, 'success');
+            }
+        }
+
+        function updateWorkerStats() {
+            const userAttendance = attendance.filter(a => a.userId === currentUser.id);
+            
+            document.getElementById('totalPresent').textContent = userAttendance.filter(a => a.status === 'present').length;
+            document.getElementById('totalLate').textContent = userAttendance.filter(a => a.status === 'late').length;
+            document.getElementById('totalAbsent').textContent = userAttendance.filter(a => a.status === 'absent').length;
+        }
+
+        function loadAttendanceHistory() {
+            const userAttendance = attendance
+                .filter(a => a.userId === currentUser.id)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            userAttendance.forEach(record => {
+                html += `
+                    <tr>
+                        <td>${record.date}</td>
+                        <td>${record.checkIn || '-'}</td>
+                        <td>${record.checkOut || '-'}</td>
+                        <td>
+                            <span class="status-badge status-${record.status}">
+                                ${record.status.toUpperCase()}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            if (userAttendance.length === 0) {
+                html = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No attendance records found</td></tr>';
+            }
+            
+            document.getElementById('attendanceBody').innerHTML = html;
+        }
+
+        // ==================== ADMIN FUNCTIONS ====================
+        function loadAdminDashboard() {
+            updateAdminStats();
+            loadSummaryBars();
+            loadRecentActivity();
+            loadUsersList();
+            loadAllAttendance();
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'dashboard') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('dashboardTab').classList.add('active');
+            } else if (tab === 'users') {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('usersTab').classList.add('active');
+                loadUsersList();
+            } else if (tab === 'allAttendance') {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('allAttendanceTab').classList.add('active');
+                loadAllAttendance();
+            }
+        }
+
+        function updateAdminStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayAttendance = attendance.filter(a => a.date === today);
+            
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('todayPresent').textContent = todayAttendance.length;
+            document.getElementById('totalRecords').textContent = attendance.length;
+        }
+
+        function loadSummaryBars() {
+            // Get last 7 days
+            const bars = document.getElementById('summaryBars');
+            const today = new Date();
+            let html = '';
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                const dayAttendance = attendance.filter(a => a.date === dateStr);
+                const present = dayAttendance.length;
+                const max = Math.max(...attendance.map(a => a.date === dateStr ? 1 : 0)) * users.length || 1;
+                const percentage = (present / users.length) * 100;
+                
+                html += `
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                        <div style="height: ${percentage}%; background: #667eea; width: 100%; border-radius: 5px 5px 0 0;"></div>
+                        <div style="margin-top: 5px; font-size: 11px;">${dateStr.slice(5)}</div>
+                        <div style="font-size: 10px;">${present}/${users.length}</div>
+                    </div>
+                `;
+            }
+            
+            bars.innerHTML = html;
+        }
+
+        function loadRecentActivity() {
+            const recent = [...attendance]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            let html = '';
+            recent.forEach(record => {
+                const user = users.find(u => u.id === record.userId);
+                html += `
+                    <tr>
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${record.date}</td>
+                        <td>
+                            <span class="status-badge status-${record.status}">
+                                ${record.status.toUpperCase()}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('recentActivityBody').innerHTML = html;
+        }
+
+        function loadUsersList() {
+            let html = '';
+            users.forEach(user => {
+                html += `
+                    <div class="user-item">
+                        <div class="user-info">
+                            <h4>
+                                ${user.name}
+                                <span class="role-badge role-${user.role}">${user.role}</span>
+                            </h4>
+                            <p>${user.email} | ID: ${user.employeeId}</p>
+                        </div>
+                        <div>
+                            <button class="delete-btn" onclick="deleteUser(${user.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('userList').innerHTML = html;
+        }
+
+        function loadAllAttendance() {
+            const filterDate = document.getElementById('filterDate').value;
+            let filtered = attendance;
+            
+            if (filterDate) {
+                filtered = attendance.filter(a => a.date === filterDate);
+            }
+            
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            filtered.forEach(record => {
+                const user = users.find(u => u.id === record.userId);
+                html += `
+                    <tr>
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${record.date}</td>
+                        <td>${record.checkIn || '-'}</td>
+                        <td>${record.checkOut || '-'}</td>
+                        <td>
+                            <span class="status-badge status-${record.status}">
+                                ${record.status.toUpperCase()}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            if (filtered.length === 0) {
+                html = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No records found</td></tr>';
+            }
+            
+            document.getElementById('allAttendanceBody').innerHTML = html;
+        }
+
+        // Add filter date listener
+        document.getElementById('filterDate')?.addEventListener('change', loadAllAttendance);
+
+        function showAddUserModal() {
+            editingUserId = null;
+            document.getElementById('modalTitle').textContent = 'Add New User';
+            document.getElementById('modalName').value = '';
+            document.getElementById('modalEmail').value = '';
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('modalRole').value = 'worker';
+            document.getElementById('modalEmployeeId').value = '';
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function hideModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        function saveUser() {
+            const name = document.getElementById('modalName').value;
+            const email = document.getElementById('modalEmail').value;
+            const password = document.getElementById('modalPassword').value;
+            const role = document.getElementById('modalRole').value;
+            const employeeId = document.getElementById('modalEmployeeId').value;
+
+            if (!name || !email || !password || !employeeId) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+
+            if (editingUserId) {
+                // Update existing user
+                const user = users.find(u => u.id === editingUserId);
+                if (user) {
+                    user.name = name;
+                    user.email = email;
+                    user.password = password;
+                    user.role = role;
+                    user.employeeId = employeeId;
+                    showToast('User updated successfully', 'success');
+                }
+            } else {
+                // Add new user
+                const newUser = {
+                    id: users.length + 1,
+                    name,
+                    email,
+                    password,
+                    role,
+                    employeeId
+                };
+                users.push(newUser);
+                showToast('User added successfully', 'success');
+            }
+
+            saveToStorage();
+            hideModal();
+            loadUsersList();
+            updateAdminStats();
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                users = users.filter(u => u.id !== userId);
+                // Also delete their attendance records
+                attendance = attendance.filter(a => a.userId !== userId);
+                saveToStorage();
+                loadUsersList();
+                updateAdminStats();
+                loadAllAttendance();
+                showToast('User deleted successfully', 'success');
+            }
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function exportAttendance() {
+            const userAttendance = attendance.filter(a => a.userId === currentUser.id);
+            let csv = 'Date,Check In,Check Out,Status\n';
+            
+            userAttendance.forEach(record => {
+                csv += `${record.date},${record.checkIn || '-'},${record.checkOut || '-'},${record.status}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `attendance_${currentUser.name}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            showToast('Attendance exported successfully', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = 'toast ' + type;
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(hideToast, 3000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.remove('show');
+        }
+
+        // ==================== MOBILE OPTIMIZATIONS ====================
+        // Prevent zoom on input focus for iOS
+        document.addEventListener('touchstart', function(event) {
+            if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'SELECT') {
+                event.target.style.fontSize = '16px';
+            }
+        });
+    </script>
 </body>
 </html>
