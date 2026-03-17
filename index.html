@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Firebase Attendance System - Complete</title>
+    <title>⚡ Firebase Attendance System</title>
     <style>
+        /* Critical CSS only - loads immediately */
         * {
             margin: 0;
             padding: 0;
@@ -28,12 +29,6 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
@@ -57,13 +52,9 @@
             padding: 25px;
         }
 
-        /* Login Form */
+        /* Login Form - Minimal styles */
         .login-form {
             display: block;
-        }
-
-        .login-form.hidden {
-            display: none;
         }
 
         .form-group {
@@ -84,14 +75,7 @@
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 16px;
-            transition: all 0.3s;
             -webkit-appearance: none;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
 
         .btn {
@@ -104,73 +88,14 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
             margin-bottom: 15px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
         }
 
         .btn-secondary {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #f5515f 0%, #9f041b 100%);
-        }
-
-        .demo-credentials {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 15px;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .demo-credentials code {
-            user-select: all;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .demo-credentials code:active {
-            background: #d4d4d4;
-        }
-
-        /* Copy tooltip */
-        .copy-tooltip {
-            position: fixed;
-            background: #333;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            pointer-events: none;
-            animation: fadeInOut 1s ease;
-            z-index: 3000;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
-
-        /* Dashboard */
+        /* Dashboard - Hidden initially */
         .dashboard {
             display: none;
         }
@@ -179,405 +104,7 @@
             display: block;
         }
 
-        .user-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-info h3 {
-            color: #333;
-            font-size: 16px;
-        }
-
-        .user-info span {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* Time Card */
-        .time-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
-        }
-
-        .time-card .time {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .time-card .date {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-
-        /* Check In/Out Buttons */
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .check-btn {
-            padding: 20px;
-            border: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: white;
-        }
-
-        .check-in {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-        }
-
-        .check-out {
-            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
-        }
-
-        .check-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .check-btn:not(:disabled):hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-card .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .stat-card .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        /* Attendance Table */
-        .section-title {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-container {
-            max-height: 300px;
-            overflow-y: auto;
-            border-radius: 12px;
-            background: #f8f9fa;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #667eea;
-            color: white;
-            padding: 12px;
-            font-size: 14px;
-            position: sticky;
-            top: 0;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-present {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-absent {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-late {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* Admin Tabs */
-        .admin-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: #f0f0f0;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .tab-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* User Management */
-        .user-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .user-item {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-info h4 {
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .user-info p {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .role-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .role-owner {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #333;
-        }
-
-        .role-admin {
-            background: #667eea;
-            color: white;
-        }
-
-        .role-worker {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .owner-badge {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #333;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-            border: 1px solid #FFA500;
-        }
-
-        .owner-stats {
-            background: linear-gradient(135deg, #f5e7b2 0%, #f5d742 100%);
-            border-left: 5px solid #FFA500;
-        }
-
-        .super-admin-section {
-            background: linear-gradient(135deg, #fff9e6 0%, #fff2cc 100%);
-            border: 2px solid #FFD700;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .super-admin-section::before {
-            content: "👑";
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            opacity: 0.3;
-            transform: rotate(15deg);
-        }
-
-        .owner-card {
-            background: white;
-            border: 2px solid #FFD700;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 15px rgba(255,215,0,0.2);
-            position: relative;
-        }
-
-        .owner-card::after {
-            content: "👑 Owner";
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            font-size: 11px;
-            color: #FFA500;
-            font-weight: bold;
-        }
-
-        .system-log {
-            font-family: monospace;
-            background: #1e1e1e;
-            color: #00ff00;
-            padding: 15px;
-            border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 12px;
-        }
-
-        .system-log p {
-            margin: 5px 0;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-        }
-
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .modal-buttons .save-btn {
-            background: #667eea;
-            color: white;
-        }
-
-        .modal-buttons .cancel-btn {
-            background: #6c757d;
-            color: white;
-        }
-
-        /* Loading Spinner */
+        /* Loading spinner */
         .loading {
             display: inline-block;
             width: 20px;
@@ -592,7 +119,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Toast Notification */
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -604,19 +131,11 @@
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             display: none;
-            align-items: center;
-            justify-content: space-between;
             z-index: 2000;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
         }
 
         .toast.show {
-            display: flex;
+            display: block;
         }
 
         .toast.success {
@@ -631,32 +150,69 @@
             border-left: 5px solid #dc3545;
         }
 
-        .toast.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border-left: 5px solid #17a2b8;
+        /* Hide demo credentials initially */
+        #demoCredentials {
+            display: none;
         }
-
-        .toast.warning {
-            background: #fff3cd;
-            color: #856404;
-            border-left: 5px solid #ffc107;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: inherit;
-        }
+    </style>
+    
+    <!-- Preload Firebase (loads faster) -->
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    
+    <!-- Load non-critical CSS later -->
+    <style id="fullStyles">
+        /* Full styles will be loaded after page render */
+        .role-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+        .role-owner { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #333; }
+        .role-admin { background: #667eea; color: white; }
+        .role-worker { background: #4CAF50; color: white; }
+        .owner-badge { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #333; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; border: 1px solid #FFA500; }
+        .owner-stats { background: linear-gradient(135deg, #f5e7b2 0%, #f5d742 100%); border-left: 5px solid #FFA500; }
+        .super-admin-section { background: linear-gradient(135deg, #fff9e6 0%, #fff2cc 100%); border: 2px solid #FFD700; border-radius: 16px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .super-admin-section::before { content: "👑"; position: absolute; top: 10px; right: 10px; font-size: 24px; opacity: 0.3; transform: rotate(15deg); }
+        .system-log { font-family: monospace; background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto; font-size: 12px; }
+        .delete-btn { background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .user-info { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .time-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(102,126,234,0.3); }
+        .time-card .time { font-size: 48px; font-weight: 700; margin-bottom: 5px; }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .check-btn { padding: 20px; border: none; border-radius: 16px; font-size: 18px; font-weight: 600; cursor: pointer; color: white; }
+        .check-in { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); }
+        .check-out { background: linear-gradient(135deg, #f44336 0%, #da190b 100%); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-card .stat-value { font-size: 24px; font-weight: 700; color: #667eea; }
+        .table-container { max-height: 300px; overflow-y: auto; border-radius: 12px; background: #f8f9fa; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #667eea; color: white; padding: 12px; font-size: 14px; position: sticky; top: 0; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; font-size: 14px; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-present { background: #d4edda; color: #155724; }
+        .status-absent { background: #f8d7da; color: #721c24; }
+        .status-late { background: #fff3cd; color: #856404; }
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; background: #f0f0f0; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .user-list { max-height: 400px; overflow-y: auto; }
+        .user-item { background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .logout-btn { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .demo-credentials { background: white; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .copy-tooltip { position: fixed; background: #333; color: white; padding: 8px 12px; border-radius: 20px; font-size: 12px; pointer-events: none; animation: fadeInOut 1s ease; z-index: 3000; }
+        @keyframes fadeInOut { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>📋 Firebase Attendance</h1>
+            <h1>📋Attendance Register system</h1>
             <p>Complete system with Owner, Admin & Worker roles</p>
         </div>
 
@@ -674,20 +230,15 @@
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="email" placeholder="Enter email" value="owner@demo.com">
+                    <input type="email" id="email" placeholder="Enter email" value="">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="password" placeholder="Enter password" value="owner123">
+                    <input type="password" id="password" placeholder="Enter password" value="">
                 </div>
                 <button class="btn" onclick="login()" id="loginBtn">Sign In</button>
                 
-                <!-- Toggle Button for Demo Credentials -->
-                <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn-secondary" style="width: auto; padding: 10px 20px; background: #6c757d;" onclick="toggleDemoCredentials()">
-                        🔑 Show Demo Login Info
-                    </button>
-                </div>
+                
                 
                 <!-- Demo Credentials (Hidden by Default) -->
                 <div id="demoCredentials" class="demo-credentials" style="display: none; margin-top: 15px;">
@@ -790,7 +341,7 @@
                     <!-- Attendance History -->
                     <div class="section-title">
                         <span>📊 My Attendance History</span>
-                        <button class="btn-secondary" style="width: auto; padding: 8px 15px; margin: 0;" onclick="exportAttendance()">Export</button>
+                        <button class="btn btn-secondary" style="width: auto; padding: 8px 15px; margin: 0;" onclick="exportAttendance()">Export</button>
                     </div>
                     <div class="table-container">
                         <table id="attendanceTable">
@@ -1005,8 +556,8 @@
                 <input type="text" id="modalEmployeeId" placeholder="Enter employee ID">
             </div>
             <div class="modal-buttons">
-                <button class="save-btn" onclick="saveUser()">Save</button>
-                <button class="cancel-btn" onclick="hideModal()">Cancel</button>
+                <button class="btn save-btn" onclick="saveUser()">Save</button>
+                <button class="btn cancel-btn" onclick="hideModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -1017,11 +568,11 @@
         <button class="toast-close" onclick="hideToast()">×</button>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
+    <!-- Load Firebase with async/defer (doesn't block rendering) -->
+    <script type="module" async>
         // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, getDoc, query, where, orderBy, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, query, where, orderBy, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         // Your Firebase configuration
         const firebaseConfig = {
@@ -1054,147 +605,42 @@
         
         console.log("Firebase initialized successfully!");
         
-        // Load initial data
-        window.loadInitialData();
+        // Load initial data in background
+        setTimeout(() => {
+            window.loadInitialData();
+        }, 100);
     </script>
 
     <script>
-        // ==================== GLOBAL VARIABLES ====================
-        let currentUser = null;
-        let editingUserId = null;
-        let timerInterval = null;
-        let usersUnsubscribe = null;
-        let attendanceUnsubscribe = null;
-
-        // ==================== INITIALIZATION ====================
-        window.loadInitialData = async function() {
-            try {
-                // Check if we have users collection, if not create default users
-                const usersRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersRef);
-                
-                if (usersSnapshot.empty) {
-                    // Create default users with owner
-                    const defaultUsers = [
-                        {
-                            name: "👑 Owner User",
-                            email: "owner@demo.com",
-                            password: "owner123",
-                            role: "owner",
-                            employeeId: "OWN001",
-                            createdAt: new Date().toISOString(),
-                            canManageAdmins: true,
-                            canViewAllData: true,
-                            canDeleteSystem: true
-                        },
-                        {
-                            name: "Admin User",
-                            email: "admin@demo.com",
-                            password: "admin123",
-                            role: "admin",
-                            employeeId: "AD001",
-                            createdAt: new Date().toISOString(),
-                            managedBy: "owner"
-                        },
-                        {
-                            name: "John Worker",
-                            email: "john@demo.com",
-                            password: "worker123",
-                            role: "worker",
-                            employeeId: "WK001",
-                            createdAt: new Date().toISOString()
-                        },
-                        {
-                            name: "Sarah Worker",
-                            email: "sarah@demo.com",
-                            password: "worker123",
-                            role: "worker",
-                            employeeId: "WK002",
-                            createdAt: new Date().toISOString()
-                        }
-                    ];
-                    
-                    for (const user of defaultUsers) {
-                        await addDoc(collection(db, 'users'), user);
-                    }
-                    console.log("Default users created with Owner role");
-                }
-                
-                // Create default attendance records if none exist
-                const attendanceRef = collection(db, 'attendance');
-                const attendanceSnapshot = await getDocs(attendanceRef);
-                
-                if (attendanceSnapshot.empty) {
-                    // Get users to get their IDs
-                    const usersSnapshot = await getDocs(usersRef);
-                    const users = [];
-                    usersSnapshot.forEach(doc => {
-                        users.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    const today = new Date().toISOString().split('T')[0];
-                    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-                    
-                    const defaultAttendance = [
-                        {
-                            userId: users.find(u => u.email === "john@demo.com")?.id,
-                            date: today,
-                            checkIn: "09:00 AM",
-                            checkOut: "05:30 PM",
-                            status: "present",
-                            timestamp: new Date().toISOString()
-                        },
-                        {
-                            userId: users.find(u => u.email === "sarah@demo.com")?.id,
-                            date: today,
-                            checkIn: "09:15 AM",
-                            checkOut: null,
-                            status: "late",
-                            timestamp: new Date().toISOString()
-                        },
-                        {
-                            userId: users.find(u => u.email === "john@demo.com")?.id,
-                            date: yesterday,
-                            checkIn: "08:55 AM",
-                            checkOut: "05:25 PM",
-                            status: "present",
-                            timestamp: new Date(Date.now() - 86400000).toISOString()
-                        }
-                    ];
-                    
-                    for (const record of defaultAttendance) {
-                        if (record.userId) {
-                            await addDoc(collection(db, 'attendance'), record);
-                        }
-                    }
-                    console.log("Default attendance created");
-                }
-            } catch (error) {
-                console.error("Error loading initial data:", error);
-            }
-        };
-
-        window.onload = function() {
-            startClock();
-        };
-
+        // ==================== OPTIMIZED INITIALIZATION ====================
+        // Show login form immediately
+        document.getElementById('loginForm').style.display = 'block';
+        
+        // Start clock immediately
         function startClock() {
-            if (timerInterval) clearInterval(timerInterval);
-            
-            function updateTime() {
+            const updateTime = () => {
                 const now = new Date();
-                document.getElementById('currentTime').textContent = now.toLocaleTimeString();
-                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { 
+                const timeEl = document.getElementById('currentTime');
+                const dateEl = document.getElementById('currentDate');
+                if (timeEl) timeEl.textContent = now.toLocaleTimeString();
+                if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric' 
                 });
-            }
-            
+            };
             updateTime();
-            timerInterval = setInterval(updateTime, 1000);
+            return setInterval(updateTime, 1000);
         }
+        
+        let timerInterval = startClock();
+
+        // ==================== GLOBAL VARIABLES ====================
+        let currentUser = null;
+        let editingUserId = null;
+        let usersUnsubscribe = null;
+        let attendanceUnsubscribe = null;
 
         // ==================== AUTHENTICATION ====================
         window.login = async function() {
@@ -1334,23 +780,61 @@
             }
         });
 
+        // ==================== INITIAL DATA LOAD ====================
+        window.loadInitialData = async function() {
+            try {
+                const usersRef = collection(db, 'users');
+                const usersSnapshot = await getDocs(usersRef);
+                
+                if (usersSnapshot.empty) {
+                    const defaultUsers = [
+                        { name: "👑 Owner User", email: "owner@demo.com", password: "owner123", role: "owner", employeeId: "OWN001", createdAt: new Date().toISOString(), canManageAdmins: true, canViewAllData: true, canDeleteSystem: true },
+                        { name: "Admin User", email: "admin@demo.com", password: "admin123", role: "admin", employeeId: "AD001", createdAt: new Date().toISOString(), managedBy: "owner" },
+                        { name: "John Worker", email: "john@demo.com", password: "worker123", role: "worker", employeeId: "WK001", createdAt: new Date().toISOString() },
+                        { name: "Sarah Worker", email: "sarah@demo.com", password: "worker123", role: "worker", employeeId: "WK002", createdAt: new Date().toISOString() }
+                    ];
+                    
+                    for (const user of defaultUsers) {
+                        await addDoc(collection(db, 'users'), user);
+                    }
+                }
+                
+                const attendanceRef = collection(db, 'attendance');
+                const attendanceSnapshot = await getDocs(attendanceRef);
+                
+                if (attendanceSnapshot.empty) {
+                    const usersSnapshot = await getDocs(usersRef);
+                    const users = [];
+                    usersSnapshot.forEach(doc => users.push({ id: doc.id, ...doc.data() }));
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                    
+                    const defaultAttendance = [
+                        { userId: users.find(u => u.email === "john@demo.com")?.id, date: today, checkIn: "09:00 AM", checkOut: "05:30 PM", status: "present", timestamp: new Date().toISOString() },
+                        { userId: users.find(u => u.email === "sarah@demo.com")?.id, date: today, checkIn: "09:15 AM", checkOut: null, status: "late", timestamp: new Date().toISOString() },
+                        { userId: users.find(u => u.email === "john@demo.com")?.id, date: yesterday, checkIn: "08:55 AM", checkOut: "05:25 PM", status: "present", timestamp: new Date(Date.now() - 86400000).toISOString() }
+                    ];
+                    
+                    for (const record of defaultAttendance) {
+                        if (record.userId) await addDoc(collection(db, 'attendance'), record);
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading initial data:", error);
+            }
+        };
+
         // ==================== REALTIME LISTENERS ====================
         function setupRealtimeListeners() {
             if (currentUser.role === 'owner' || currentUser.role === 'admin') {
-                // Listen to users collection
                 const usersRef = collection(db, 'users');
                 usersUnsubscribe = onSnapshot(usersRef, (snapshot) => {
-                    if (document.getElementById('usersTab')?.classList.contains('active')) {
-                        loadUsersList();
-                    }
-                    if (currentUser.role === 'owner') {
-                        loadAdminsList();
-                        updateOwnerStats();
-                    }
+                    if (document.getElementById('usersTab')?.classList.contains('active')) loadUsersList();
+                    if (currentUser.role === 'owner') { loadAdminsList(); updateOwnerStats(); }
                     updateAdminStats();
                 });
                 
-                // Listen to attendance collection
                 const attendanceRef = collection(db, 'attendance');
                 attendanceUnsubscribe = onSnapshot(attendanceRef, (snapshot) => {
                     if (currentUser.role === 'owner' || currentUser.role === 'admin') {
@@ -1358,22 +842,15 @@
                             loadRecentActivity();
                             loadSummaryBars();
                         }
-                        if (document.getElementById('allAttendanceTab')?.classList.contains('active')) {
-                            loadAllAttendance();
-                        }
-                        if (currentUser.role === 'owner') {
-                            loadSystemStats();
-                        }
+                        if (document.getElementById('allAttendanceTab')?.classList.contains('active')) loadAllAttendance();
+                        if (currentUser.role === 'owner') loadSystemStats();
                         updateAdminStats();
                     }
                 });
             } else {
-                // Worker: listen to their own attendance
                 const attendanceRef = collection(db, 'attendance');
                 const q = query(attendanceRef, where('userId', '==', currentUser.id));
-                attendanceUnsubscribe = onSnapshot(q, (snapshot) => {
-                    loadWorkerDashboard();
-                });
+                attendanceUnsubscribe = onSnapshot(q, () => loadWorkerDashboard());
             }
         }
 
@@ -1381,25 +858,15 @@
         window.loadWorkerDashboard = async function() {
             try {
                 const today = new Date().toISOString().split('T')[0];
-                
-                // Get today's attendance
                 const attendanceRef = collection(db, 'attendance');
-                const q = query(attendanceRef, 
-                    where('userId', '==', currentUser.id),
-                    where('date', '==', today)
-                );
-                
+                const q = query(attendanceRef, where('userId', '==', currentUser.id), where('date', '==', today));
                 const querySnapshot = await getDocs(q);
                 const todayAttendance = querySnapshot.docs[0]?.data();
                 
-                // Update button states
                 document.getElementById('checkInBtn').disabled = !!todayAttendance;
                 document.getElementById('checkOutBtn').disabled = !todayAttendance || !!todayAttendance.checkOut;
                 
-                // Load stats
                 await updateWorkerStats();
-                
-                // Load attendance history
                 await loadAttendanceHistory();
             } catch (error) {
                 console.error("Error loading worker dashboard:", error);
@@ -1411,29 +878,23 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             const dateStr = now.toISOString().split('T')[0];
-            const hour = now.getHours();
-            
-            const status = hour >= 9 ? 'late' : 'present';
+            const status = now.getHours() >= 9 ? 'late' : 'present';
             
             try {
-                const attendanceData = {
+                await addDoc(collection(db, 'attendance'), {
                     userId: currentUser.id,
                     date: dateStr,
                     checkIn: timeStr,
                     checkOut: null,
                     status: status,
                     timestamp: now.toISOString()
-                };
-                
-                await addDoc(collection(db, 'attendance'), attendanceData);
+                });
                 
                 document.getElementById('checkInBtn').disabled = true;
                 document.getElementById('checkOutBtn').disabled = false;
-                
-                showToast(`Checked in successfully at ${timeStr}`, status === 'late' ? 'warning' : 'success');
+                showToast(`Checked in at ${timeStr}`, status === 'late' ? 'warning' : 'success');
             } catch (error) {
-                console.error("Check-in error:", error);
-                showToast('Check-in failed: ' + error.message, 'error');
+                showToast('Check-in failed', 'error');
             }
         };
 
@@ -1444,26 +905,16 @@
             
             try {
                 const attendanceRef = collection(db, 'attendance');
-                const q = query(attendanceRef, 
-                    where('userId', '==', currentUser.id),
-                    where('date', '==', dateStr),
-                    where('checkOut', '==', null)
-                );
-                
+                const q = query(attendanceRef, where('userId', '==', currentUser.id), where('date', '==', dateStr), where('checkOut', '==', null));
                 const querySnapshot = await getDocs(q);
                 
                 if (!querySnapshot.empty) {
-                    const docRef = querySnapshot.docs[0].ref;
-                    await updateDoc(docRef, {
-                        checkOut: timeStr
-                    });
-                    
+                    await updateDoc(querySnapshot.docs[0].ref, { checkOut: timeStr });
                     document.getElementById('checkOutBtn').disabled = true;
-                    showToast(`Checked out successfully at ${timeStr}`, 'success');
+                    showToast(`Checked out at ${timeStr}`, 'success');
                 }
             } catch (error) {
-                console.error("Check-out error:", error);
-                showToast('Check-out failed: ' + error.message, 'error');
+                showToast('Check-out failed', 'error');
             }
         };
 
@@ -1473,10 +924,7 @@
                 const q = query(attendanceRef, where('userId', '==', currentUser.id));
                 const querySnapshot = await getDocs(q);
                 
-                let present = 0;
-                let late = 0;
-                let absent = 0;
-                
+                let present = 0, late = 0, absent = 0;
                 querySnapshot.forEach(doc => {
                     const record = doc.data();
                     if (record.status === 'present') present++;
@@ -1495,34 +943,16 @@
         window.loadAttendanceHistory = async function() {
             try {
                 const attendanceRef = collection(db, 'attendance');
-                const q = query(attendanceRef, 
-                    where('userId', '==', currentUser.id),
-                    orderBy('date', 'desc')
-                );
-                
+                const q = query(attendanceRef, where('userId', '==', currentUser.id), orderBy('date', 'desc'));
                 const querySnapshot = await getDocs(q);
                 
                 let html = '';
                 querySnapshot.forEach(doc => {
                     const record = doc.data();
-                    html += `
-                        <tr>
-                            <td>${record.date}</td>
-                            <td>${record.checkIn || '-'}</td>
-                            <td>${record.checkOut || '-'}</td>
-                            <td>
-                                <span class="status-badge status-${record.status}">
-                                    ${record.status.toUpperCase()}
-                                </span>
-                            </td>
-                        </tr>
-                    `;
+                    html += `<tr><td>${record.date}</td><td>${record.checkIn || '-'}</td><td>${record.checkOut || '-'}</td><td><span class="status-badge status-${record.status}">${record.status.toUpperCase()}</span></td></tr>`;
                 });
                 
-                if (querySnapshot.empty) {
-                    html = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No attendance records found</td></tr>';
-                }
-                
+                if (querySnapshot.empty) html = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No attendance records found</td></tr>';
                 document.getElementById('attendanceBody').innerHTML = html;
             } catch (error) {
                 console.error("Error loading attendance history:", error);
@@ -1540,21 +970,16 @@
 
         window.updateAdminStats = async function() {
             try {
-                // Get total users
-                const usersRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersRef);
+                const usersSnapshot = await getDocs(collection(db, 'users'));
                 document.getElementById('totalUsers').textContent = usersSnapshot.size;
                 
-                // Get today's attendance
                 const today = new Date().toISOString().split('T')[0];
                 const attendanceRef = collection(db, 'attendance');
-                const q = query(attendanceRef, where('date', '==', today));
-                const attendanceSnapshot = await getDocs(q);
-                document.getElementById('todayPresent').textContent = attendanceSnapshot.size;
+                const todaySnapshot = await getDocs(query(attendanceRef, where('date', '==', today)));
+                document.getElementById('todayPresent').textContent = todaySnapshot.size;
                 
-                // Get total records
-                const allAttendanceSnapshot = await getDocs(attendanceRef);
-                document.getElementById('totalRecords').textContent = allAttendanceSnapshot.size;
+                const allSnapshot = await getDocs(attendanceRef);
+                document.getElementById('totalRecords').textContent = allSnapshot.size;
             } catch (error) {
                 console.error("Error updating admin stats:", error);
             }
@@ -1564,35 +989,21 @@
             try {
                 const bars = document.getElementById('summaryBars');
                 const today = new Date();
-                let html = '';
-                
-                // Get all users for max calculation
-                const usersRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersRef);
+                const usersSnapshot = await getDocs(collection(db, 'users'));
                 const totalUsers = usersSnapshot.size;
                 
+                let html = '';
                 for (let i = 6; i >= 0; i--) {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
                     const dateStr = date.toISOString().split('T')[0];
                     
-                    // Get attendance for this date
-                    const attendanceRef = collection(db, 'attendance');
-                    const q = query(attendanceRef, where('date', '==', dateStr));
-                    const attendanceSnapshot = await getDocs(q);
-                    
+                    const attendanceSnapshot = await getDocs(query(collection(db, 'attendance'), where('date', '==', dateStr)));
                     const present = attendanceSnapshot.size;
                     const percentage = (present / totalUsers) * 100 || 0;
                     
-                    html += `
-                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                            <div style="height: ${percentage}%; background: #667eea; width: 100%; border-radius: 5px 5px 0 0; transition: height 0.3s;"></div>
-                            <div style="margin-top: 5px; font-size: 11px;">${dateStr.slice(5)}</div>
-                            <div style="font-size: 10px;">${present}/${totalUsers}</div>
-                        </div>
-                    `;
+                    html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;"><div style="height:${percentage}%;background:#667eea;width:100%;border-radius:5px 5px 0 0;"></div><div style="margin-top:5px;font-size:11px;">${dateStr.slice(5)}</div><div style="font-size:10px;">${present}/${totalUsers}</div></div>`;
                 }
-                
                 bars.innerHTML = html;
             } catch (error) {
                 console.error("Error loading summary bars:", error);
@@ -1608,34 +1019,16 @@
                 let html = '';
                 let count = 0;
                 
-                // Get last 5 records
                 for (const doc of querySnapshot.docs) {
                     if (count >= 5) break;
-                    
                     const record = doc.data();
                     
-                    // Get user info
-                    const userRef = collection(db, 'users');
-                    const userQuery = query(userRef, where('__name__', '==', record.userId));
+                    const userQuery = query(collection(db, 'users'), where('__name__', '==', record.userId));
                     const userSnapshot = await getDocs(userQuery);
-                    
                     let userName = 'Unknown';
-                    userSnapshot.forEach(u => {
-                        userName = u.data().name;
-                    });
+                    userSnapshot.forEach(u => userName = u.data().name);
                     
-                    html += `
-                        <tr>
-                            <td>${userName}</td>
-                            <td>${record.date}</td>
-                            <td>
-                                <span class="status-badge status-${record.status}">
-                                    ${record.status.toUpperCase()}
-                                </span>
-                            </td>
-                        </tr>
-                    `;
-                    
+                    html += `<tr><td>${userName}</td><td>${record.date}</td><td><span class="status-badge status-${record.status}">${record.status.toUpperCase()}</span></td></tr>`;
                     count++;
                 }
                 
@@ -1647,30 +1040,14 @@
 
         window.loadUsersList = async function() {
             try {
-                const usersRef = collection(db, 'users');
-                const querySnapshot = await getDocs(usersRef);
+                const querySnapshot = await getDocs(collection(db, 'users'));
                 
                 let html = '';
                 querySnapshot.forEach(doc => {
                     const user = doc.data();
-                    // Don't show owner in regular users list for admins
                     if (currentUser.role === 'admin' && user.role === 'owner') return;
                     
-                    html += `
-                        <div class="user-item">
-                            <div class="user-info">
-                                <h4>
-                                    ${user.name}
-                                    <span class="role-badge role-${user.role}">${user.role}</span>
-                                </h4>
-                                <p>${user.email} | ID: ${user.employeeId}</p>
-                            </div>
-                            <div>
-                                ${currentUser.role === 'owner' || (currentUser.role === 'admin' && user.role === 'worker') ? 
-                                    `<button class="delete-btn" onclick="deleteUser('${doc.id}')">Delete</button>` : ''}
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="user-item"><div class="user-info"><h4>${user.name}<span class="role-badge role-${user.role}">${user.role}</span></h4><p>${user.email} | ID: ${user.employeeId}</p></div><div>${currentUser.role === 'owner' || (currentUser.role === 'admin' && user.role === 'worker') ? `<button class="delete-btn" onclick="deleteUser('${doc.id}')">Delete</button>` : ''}</div></div>`;
                 });
                 
                 document.getElementById('userList').innerHTML = html;
@@ -1682,62 +1059,32 @@
         window.loadAllAttendance = async function() {
             try {
                 const filterDate = document.getElementById('filterDate').value;
-                
-                let q;
                 const attendanceRef = collection(db, 'attendance');
-                
-                if (filterDate) {
-                    q = query(attendanceRef, where('date', '==', filterDate), orderBy('timestamp', 'desc'));
-                } else {
-                    q = query(attendanceRef, orderBy('timestamp', 'desc'));
-                }
-                
+                const q = filterDate ? query(attendanceRef, where('date', '==', filterDate), orderBy('timestamp', 'desc')) : query(attendanceRef, orderBy('timestamp', 'desc'));
                 const querySnapshot = await getDocs(q);
                 
                 let html = '';
                 for (const doc of querySnapshot.docs) {
                     const record = doc.data();
                     
-                    // Get user info
-                    const userRef = collection(db, 'users');
-                    const userQuery = query(userRef, where('__name__', '==', record.userId));
+                    const userQuery = query(collection(db, 'users'), where('__name__', '==', record.userId));
                     const userSnapshot = await getDocs(userQuery);
-                    
                     let userName = 'Unknown';
-                    userSnapshot.forEach(u => {
-                        userName = u.data().name;
-                    });
+                    userSnapshot.forEach(u => userName = u.data().name);
                     
-                    html += `
-                        <tr>
-                            <td>${userName}</td>
-                            <td>${record.date}</td>
-                            <td>${record.checkIn || '-'}</td>
-                            <td>${record.checkOut || '-'}</td>
-                            <td>
-                                <span class="status-badge status-${record.status}">
-                                    ${record.status.toUpperCase()}
-                                </span>
-                            </td>
-                        </tr>
-                    `;
+                    html += `<tr><td>${userName}</td><td>${record.date}</td><td>${record.checkIn || '-'}</td><td>${record.checkOut || '-'}</td><td><span class="status-badge status-${record.status}">${record.status.toUpperCase()}</span></td></tr>`;
                 }
                 
-                if (querySnapshot.empty) {
-                    html = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No records found</td></tr>';
-                }
-                
+                if (querySnapshot.empty) html = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No records found</td></tr>';
                 document.getElementById('allAttendanceBody').innerHTML = html;
             } catch (error) {
                 console.error("Error loading all attendance:", error);
             }
         };
 
-        // Add filter date listener
         document.getElementById('filterDate')?.addEventListener('change', loadAllAttendance);
 
         window.switchTab = function(tab) {
-            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
@@ -1786,29 +1133,14 @@
             }
 
             try {
-                const userData = {
-                    name,
-                    email,
-                    password,
-                    role,
-                    employeeId,
-                    createdAt: new Date().toISOString()
-                };
-
-                // Add managedBy if admin is creating
-                if (currentUser.role === 'admin') {
-                    userData.managedBy = currentUser.id;
-                }
+                const userData = { name, email, password, role, employeeId, createdAt: new Date().toISOString() };
+                if (currentUser.role === 'admin') userData.managedBy = currentUser.id;
 
                 if (editingUserId) {
-                    // Update existing user
-                    const userRef = doc(db, 'users', editingUserId);
-                    await updateDoc(userRef, userData);
+                    await updateDoc(doc(db, 'users', editingUserId), userData);
                     showToast('User updated successfully', 'success');
                 } else {
-                    // Check if user already exists
-                    const usersRef = collection(db, 'users');
-                    const q = query(usersRef, where('email', '==', email));
+                    const q = query(collection(db, 'users'), where('email', '==', email));
                     const querySnapshot = await getDocs(q);
                     
                     if (!querySnapshot.empty) {
@@ -1816,11 +1148,9 @@
                         return;
                     }
                     
-                    // Add new user
                     await addDoc(collection(db, 'users'), userData);
                     showToast('User added successfully', 'success');
                     
-                    // Log if owner created admin
                     if (currentUser.role === 'owner' && role === 'admin') {
                         addToSystemLog(`New admin created: ${name}`);
                     }
@@ -1834,7 +1164,6 @@
                     updateOwnerStats();
                 }
             } catch (error) {
-                console.error("Error saving user:", error);
                 showToast('Error saving user: ' + error.message, 'error');
             }
         };
@@ -1847,33 +1176,24 @@
             
             if (confirm('Are you sure you want to delete this user? This will also delete all their attendance records.')) {
                 try {
-                    // Get user info for logging
                     const userDoc = await getDoc(doc(db, 'users', userId));
                     const userName = userDoc.data().name;
                     
-                    // Delete user
                     await deleteDoc(doc(db, 'users', userId));
                     
-                    // Delete user's attendance records
-                    const attendanceRef = collection(db, 'attendance');
-                    const q = query(attendanceRef, where('userId', '==', userId));
+                    const q = query(collection(db, 'attendance'), where('userId', '==', userId));
                     const querySnapshot = await getDocs(q);
                     
                     const deletePromises = [];
-                    querySnapshot.forEach(doc => {
-                        deletePromises.push(deleteDoc(doc.ref));
-                    });
-                    
+                    querySnapshot.forEach(doc => deletePromises.push(deleteDoc(doc.ref)));
                     await Promise.all(deletePromises);
                     
                     showToast('User deleted successfully', 'success');
                     
-                    // Log if owner deleted someone
                     if (currentUser.role === 'owner') {
                         addToSystemLog(`User deleted: ${userName}`);
                     }
                 } catch (error) {
-                    console.error("Error deleting user:", error);
                     showToast('Error deleting user: ' + error.message, 'error');
                 }
             }
@@ -1893,8 +1213,7 @@
 
         window.loadAdminsList = async function() {
             try {
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where('role', '==', 'admin'));
+                const q = query(collection(db, 'users'), where('role', '==', 'admin'));
                 const querySnapshot = await getDocs(q);
                 
                 let html = '';
@@ -1902,31 +1221,10 @@
                     const admin = doc.data();
                     const createdDate = admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : 'N/A';
                     
-                    html += `
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center;">
-                                    <span style="background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-                                        👤
-                                    </span>
-                                    ${admin.name}
-                                </div>
-                            </td>
-                            <td>${admin.email}</td>
-                            <td>${admin.employeeId || 'N/A'}</td>
-                            <td>${createdDate}</td>
-                            <td>
-                                <button class="delete-btn" style="background: #dc3545;" onclick="deleteAdmin('${doc.id}', '${admin.name}')">Delete</button>
-                                <button class="delete-btn" style="background: #28a745; margin-left: 5px;" onclick="viewAdminStats('${doc.id}')">View</button>
-                            </td>
-                        </tr>
-                    `;
+                    html += `<tr><td><div style="display:flex;align-items:center;"><span style="background:#667eea;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:10px;">👤</span>${admin.name}</div></td><td>${admin.email}</td><td>${admin.employeeId || 'N/A'}</td><td>${createdDate}</td><td><button class="delete-btn" style="background:#dc3545;" onclick="deleteAdmin('${doc.id}', '${admin.name}')">Delete</button><button class="delete-btn" style="background:#28a745;margin-left:5px;" onclick="viewAdminStats('${doc.id}')">View</button></td></tr>`;
                 });
                 
-                if (querySnapshot.empty) {
-                    html = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No admins found</td></tr>';
-                }
-                
+                if (querySnapshot.empty) html = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No admins found</td></tr>';
                 document.getElementById('adminsList').innerHTML = html;
             } catch (error) {
                 console.error("Error loading admins list:", error);
@@ -1935,35 +1233,19 @@
 
         window.loadSystemStats = async function() {
             try {
-                // Get all users
-                const usersRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersRef);
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
                 
-                // Calculate approximate database size
                 let totalSize = 0;
-                usersSnapshot.forEach(doc => {
-                    totalSize += JSON.stringify(doc.data()).length;
-                });
+                usersSnapshot.forEach(doc => totalSize += JSON.stringify(doc.data()).length);
+                attendanceSnapshot.forEach(doc => totalSize += JSON.stringify(doc.data()).length);
                 
-                // Get all attendance
-                const attendanceRef = collection(db, 'attendance');
-                const attendanceSnapshot = await getDocs(attendanceRef);
-                
-                attendanceSnapshot.forEach(doc => {
-                    totalSize += JSON.stringify(doc.data()).length;
-                });
-                
-                const sizeInKB = (totalSize / 1024).toFixed(2);
-                document.getElementById('dbSize').textContent = `${sizeInKB} KB`;
-                
-                // Total records
+                document.getElementById('dbSize').textContent = `${(totalSize / 1024).toFixed(2)} KB`;
                 document.getElementById('totalRecordsOwner').textContent = attendanceSnapshot.size;
                 
-                // Active today
                 const today = new Date().toISOString().split('T')[0];
                 const activeToday = attendanceSnapshot.docs.filter(doc => doc.data().date === today).length;
                 document.getElementById('activeToday').textContent = activeToday;
-                
             } catch (error) {
                 console.error("Error loading system stats:", error);
             }
@@ -1971,13 +1253,9 @@
 
         window.updateOwnerStats = async function() {
             try {
-                const usersRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersRef);
+                const usersSnapshot = await getDocs(collection(db, 'users'));
                 
-                let owners = 0;
-                let admins = 0;
-                let workers = 0;
-                
+                let owners = 0, admins = 0, workers = 0;
                 usersSnapshot.forEach(doc => {
                     const user = doc.data();
                     if (user.role === 'owner') owners++;
@@ -1988,7 +1266,6 @@
                 document.getElementById('totalOwners').textContent = owners;
                 document.getElementById('totalAdmins').textContent = admins;
                 document.getElementById('totalWorkers').textContent = workers;
-                
             } catch (error) {
                 console.error("Error updating owner stats:", error);
             }
@@ -1998,22 +1275,17 @@
             const log = document.getElementById('systemLog');
             const now = new Date();
             
-            // Clear existing log
             log.innerHTML = '';
-            
-            // Add timestamped entries
             const entries = [
-                { time: now, action: 'System initialized', type: 'info' },
-                { time: new Date(now - 300000), action: 'Database connected', type: 'success' },
-                { time: new Date(now - 600000), action: 'Security check passed', type: 'success' },
-                { time: new Date(now - 900000), action: 'Owner dashboard loaded', type: 'owner' },
-                { time: new Date(now - 1200000), action: 'Backup completed', type: 'info' }
+                { time: now, action: 'System initialized' },
+                { time: new Date(now - 300000), action: 'Database connected' },
+                { time: new Date(now - 600000), action: 'Security check passed' },
+                { time: new Date(now - 900000), action: 'Owner dashboard loaded' },
+                { time: new Date(now - 1200000), action: 'Backup completed' }
             ];
             
             entries.forEach(entry => {
-                const timeStr = entry.time.toLocaleTimeString();
-                const emoji = entry.type === 'owner' ? '👑' : entry.type === 'success' ? '✅' : '🔄';
-                log.innerHTML += `<p style="color: ${entry.type === 'owner' ? '#FFA500' : '#00ff00'}">${emoji} [${timeStr}] ${entry.action}</p>`;
+                log.innerHTML += `<p style="color: #FFA500;">👑 [${entry.time.toLocaleTimeString()}] ${entry.action}</p>`;
             });
         };
 
@@ -2025,53 +1297,33 @@
             document.getElementById('modalPassword').value = '';
             document.getElementById('modalRole').value = 'admin';
             document.getElementById('modalEmployeeId').value = '';
-            
-            // Disable role selection for owner
             document.getElementById('modalRole').disabled = true;
-            
             document.getElementById('userModal').classList.add('active');
         };
 
         window.deleteAdmin = async function(adminId, adminName) {
-            if (confirm(`⚠️ Are you sure you want to delete admin "${adminName}"? This will also delete all associated worker accounts and attendance records.`)) {
+            if (confirm(`⚠️ Delete admin "${adminName}"? This will delete all associated workers and attendance.`)) {
                 try {
-                    // Find all workers created by this admin
-                    const usersRef = collection(db, 'users');
-                    const workersQuery = query(usersRef, where('managedBy', '==', adminId));
+                    const workersQuery = query(collection(db, 'users'), where('managedBy', '==', adminId));
                     const workersSnapshot = await getDocs(workersQuery);
                     
-                    // Delete all workers and their attendance
                     const deletePromises = [];
                     
-                    // Delete workers and their attendance
                     for (const workerDoc of workersSnapshot.docs) {
-                        // Delete worker's attendance
-                        const attendanceRef = collection(db, 'attendance');
-                        const attendanceQuery = query(attendanceRef, where('userId', '==', workerDoc.id));
+                        const attendanceQuery = query(collection(db, 'attendance'), where('userId', '==', workerDoc.id));
                         const attendanceSnapshot = await getDocs(attendanceQuery);
-                        
-                        attendanceSnapshot.forEach(attDoc => {
-                            deletePromises.push(deleteDoc(attDoc.ref));
-                        });
-                        
-                        // Delete worker
+                        attendanceSnapshot.forEach(attDoc => deletePromises.push(deleteDoc(attDoc.ref)));
                         deletePromises.push(deleteDoc(workerDoc.ref));
                     }
                     
-                    // Delete the admin
                     deletePromises.push(deleteDoc(doc(db, 'users', adminId)));
-                    
                     await Promise.all(deletePromises);
                     
-                    showToast(`Admin "${adminName}" and all associated data deleted`, 'success');
+                    showToast(`Admin "${adminName}" deleted`, 'success');
                     loadAdminsList();
                     updateOwnerStats();
-                    
-                    // Log this action
-                    addToSystemLog(`Admin ${adminName} deleted by owner`);
-                    
+                    addToSystemLog(`Admin ${adminName} deleted`);
                 } catch (error) {
-                    console.error("Error deleting admin:", error);
                     showToast('Error deleting admin', 'error');
                 }
             }
@@ -2079,65 +1331,38 @@
 
         window.viewAdminStats = async function(adminId) {
             try {
-                // Get admin details
                 const adminDoc = await getDoc(doc(db, 'users', adminId));
                 const admin = adminDoc.data();
                 
-                // Get their workers
-                const usersRef = collection(db, 'users');
-                const workersQuery = query(usersRef, where('managedBy', '==', adminId));
+                const workersQuery = query(collection(db, 'users'), where('managedBy', '==', adminId));
                 const workersSnapshot = await getDocs(workersQuery);
                 
-                // Get attendance stats
-                const workerIds = workersSnapshot.docs.map(doc => doc.id);
-                const attendanceRef = collection(db, 'attendance');
                 let totalAttendance = 0;
-                
-                for (const workerId of workerIds) {
-                    const attendanceQuery = query(attendanceRef, where('userId', '==', workerId));
+                for (const workerDoc of workersSnapshot.docs) {
+                    const attendanceQuery = query(collection(db, 'attendance'), where('userId', '==', workerDoc.id));
                     const attendanceSnapshot = await getDocs(attendanceQuery);
                     totalAttendance += attendanceSnapshot.size;
                 }
                 
-                // Show stats in alert
-                const statsMessage = `
-                    👑 Admin: ${admin.name}
-                    📧 Email: ${admin.email}
-                    🆔 Employee ID: ${admin.employeeId}
-                    
-                    📊 Statistics:
-                    • Workers managed: ${workersSnapshot.size}
-                    • Total attendance records: ${totalAttendance}
-                    • Account created: ${admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : 'N/A'}
-                `;
-                
-                alert(statsMessage);
-                
+                alert(`👑 Admin: ${admin.name}\n📧 ${admin.email}\n🆔 ${admin.employeeId}\n\n📊 Workers: ${workersSnapshot.size}\n📝 Attendance: ${totalAttendance}\n📅 Created: ${admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : 'N/A'}`);
             } catch (error) {
-                console.error("Error viewing admin stats:", error);
                 showToast('Error loading admin stats', 'error');
             }
         };
 
         window.addToSystemLog = function(action) {
             const log = document.getElementById('systemLog');
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString();
-            log.innerHTML += `<p style="color: #FFA500;">👑 [${timeStr}] ${action}</p>`;
-            
-            // Auto-scroll to bottom
+            log.innerHTML += `<p style="color: #FFA500;">👑 [${new Date().toLocaleTimeString()}] ${action}</p>`;
             log.scrollTop = log.scrollHeight;
         };
 
         // ==================== UTILITY FUNCTIONS ====================
         window.exportAttendance = async function() {
             try {
-                const attendanceRef = collection(db, 'attendance');
-                const q = query(attendanceRef, where('userId', '==', currentUser.id));
+                const q = query(collection(db, 'attendance'), where('userId', '==', currentUser.id));
                 const querySnapshot = await getDocs(q);
                 
                 let csv = 'Date,Check In,Check Out,Status\n';
-                
                 querySnapshot.forEach(doc => {
                     const record = doc.data();
                     csv += `${record.date},${record.checkIn || '-'},${record.checkOut || '-'},${record.status}\n`;
@@ -2150,10 +1375,9 @@
                 a.download = `attendance_${currentUser.name}_${new Date().toISOString().split('T')[0]}.csv`;
                 a.click();
                 
-                showToast('Attendance exported successfully', 'success');
+                showToast('Attendance exported', 'success');
             } catch (error) {
-                console.error("Error exporting attendance:", error);
-                showToast('Error exporting data', 'error');
+                showToast('Export failed', 'error');
             }
         };
 
@@ -2165,19 +1389,12 @@
             toastMessage.textContent = message;
             toast.classList.add('show');
             
-            setTimeout(hideToast, 3000);
+            setTimeout(() => toast.classList.remove('show'), 2000);
         };
 
         window.hideToast = function() {
             document.getElementById('toast').classList.remove('show');
         };
-
-        // ==================== MOBILE OPTIMIZATIONS ====================
-        document.addEventListener('touchstart', function(event) {
-            if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'SELECT') {
-                event.target.style.fontSize = '16px';
-            }
-        });
     </script>
 </body>
 </html>
